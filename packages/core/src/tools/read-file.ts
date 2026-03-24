@@ -234,14 +234,6 @@ export class ReadFileTool extends BaseDeclarativeTool<
       params.file_path,
     );
 
-    const validationError = this.config.validatePathAccess(
-      resolvedPath,
-      'read',
-    );
-    if (validationError) {
-      return validationError;
-    }
-
     if (params.start_line !== undefined && params.start_line < 1) {
       return 'start_line must be at least 1';
     }
@@ -254,6 +246,14 @@ export class ReadFileTool extends BaseDeclarativeTool<
       params.start_line > params.end_line
     ) {
       return 'start_line cannot be greater than end_line';
+    }
+
+    const validationError = this.config.validatePathAccess(
+      resolvedPath,
+      'read',
+    );
+    if (validationError) {
+      return validationError;
     }
 
     const fileFilteringOptions = this.config.getFileFilteringOptions();
