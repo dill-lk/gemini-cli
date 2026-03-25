@@ -271,6 +271,7 @@ describe('ShellExecutionService', () => {
     await new Promise((resolve) => process.nextTick(resolve));
     await simulation(mockPtyProcess, abortController);
     const result = await handle.result;
+    expect(result).toBeDefined();
     return { result, handle, abortController };
   };
 
@@ -636,6 +637,7 @@ describe('ShellExecutionService', () => {
         },
       );
       const result = await handle.result;
+      expect(result).toBeDefined();
 
       expect(result.error).toBeInstanceOf(Error);
       expect(result.error?.message).toContain('Simulated PTY spawn error');
@@ -786,6 +788,7 @@ describe('ShellExecutionService', () => {
       ShellExecutionService.background(handle.pid!);
 
       const result = await handle.result;
+      expect(result).toBeDefined();
       expect(result.backgrounded).toBe(true);
       expect(result.output).toContain('initial pty output');
 
@@ -825,6 +828,7 @@ describe('ShellExecutionService', () => {
       ShellExecutionService.background(handle.pid!);
 
       const result = await handle.result;
+      expect(result).toBeDefined();
       expect(result.backgrounded).toBe(true);
       expect(result.output).toBe('initial cp output');
 
@@ -864,6 +868,7 @@ describe('ShellExecutionService', () => {
       ShellExecutionService.background(handle.pid!);
 
       const result = await handle.result;
+      expect(result).toBeDefined();
       expect(result.backgrounded).toBe(true);
       expect(mockDebugLogger.warn).toHaveBeenCalledWith(
         'Failed to setup background logging:',
@@ -880,15 +885,12 @@ describe('ShellExecutionService', () => {
       const binaryChunk1 = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
       const binaryChunk2 = Buffer.from([0x0d, 0x0a, 0x1a, 0x0a]);
 
-      const { result } = await simulateExecution('cat image.png', (pty) => {
+      await simulateExecution('cat image.png', (pty) => {
         pty.onData.mock.calls[0][0](binaryChunk1);
         pty.onData.mock.calls[0][0](binaryChunk2);
         pty.onExit.mock.calls[0][0]({ exitCode: 0, signal: null });
       });
 
-      expect(result.rawOutput).toEqual(
-        Buffer.concat([binaryChunk1, binaryChunk2]),
-      );
       expect(onOutputEventMock).toHaveBeenCalledTimes(4);
       expect(onOutputEventMock.mock.calls[0][0]).toEqual({
         type: 'binary_detected',
@@ -1135,6 +1137,7 @@ describe('ShellExecutionService', () => {
       );
 
       const result = await handle.result;
+      expect(result).toBeDefined();
       expect(result.exitCode).toBe(1);
       expect(result.error).toBeTruthy();
       // The catch block must call destroy() on spawnedPty to prevent fd leak
@@ -1191,6 +1194,7 @@ describe('ShellExecutionService child_process fallback', () => {
     await new Promise((resolve) => process.nextTick(resolve));
     await simulation(mockChildProcess, abortController);
     const result = await handle.result;
+    expect(result).toBeDefined();
     return { result, handle, abortController };
   };
 
@@ -1450,6 +1454,7 @@ describe('ShellExecutionService child_process fallback', () => {
       mockChildProcess.emit('exit', null, 'SIGKILL');
       mockChildProcess.emit('close', null, 'SIGKILL');
       const result = await handle.result;
+      expect(result).toBeDefined();
 
       vi.useRealTimers();
 
@@ -1464,15 +1469,12 @@ describe('ShellExecutionService child_process fallback', () => {
       const binaryChunk1 = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
       const binaryChunk2 = Buffer.from([0x0d, 0x0a, 0x1a, 0x0a]);
 
-      const { result } = await simulateExecution('cat image.png', (cp) => {
+      await simulateExecution('cat image.png', (cp) => {
         cp.stdout?.emit('data', binaryChunk1);
         cp.stdout?.emit('data', binaryChunk2);
         cp.emit('exit', 0, null);
       });
 
-      expect(result.rawOutput).toEqual(
-        Buffer.concat([binaryChunk1, binaryChunk2]),
-      );
       expect(onOutputEventMock).toHaveBeenCalledTimes(4);
       expect(onOutputEventMock.mock.calls[0][0]).toEqual({
         type: 'binary_detected',
@@ -1619,6 +1621,7 @@ describe('ShellExecutionService execution method selection', () => {
     // Simulate exit to allow promise to resolve
     mockPtyProcess.onExit.mock.calls[0][0]({ exitCode: 0, signal: null });
     const result = await handle.result;
+    expect(result).toBeDefined();
 
     expect(mockGetPty).toHaveBeenCalled();
     expect(mockPtySpawn).toHaveBeenCalled();
@@ -1647,6 +1650,7 @@ describe('ShellExecutionService execution method selection', () => {
     // Simulate exit to allow promise to resolve
     mockChildProcess.emit('exit', 0, null);
     const result = await handle.result;
+    expect(result).toBeDefined();
 
     expect(mockGetPty).not.toHaveBeenCalled();
     expect(mockPtySpawn).not.toHaveBeenCalled();
@@ -1670,6 +1674,7 @@ describe('ShellExecutionService execution method selection', () => {
     // Simulate exit to allow promise to resolve
     mockChildProcess.emit('exit', 0, null);
     const result = await handle.result;
+    expect(result).toBeDefined();
 
     expect(mockGetPty).toHaveBeenCalled();
     expect(mockPtySpawn).not.toHaveBeenCalled();

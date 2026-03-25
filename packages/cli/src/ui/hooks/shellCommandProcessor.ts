@@ -444,7 +444,7 @@ export const useShellCommandProcessor = (
           }
 
           let mainContent: string;
-          if (isBinary(result.rawOutput)) {
+          if (isBinaryStream || isBinary(result.rawOutput)) {
             mainContent =
               '[Command produced binary output, which is not shown.]';
           } else {

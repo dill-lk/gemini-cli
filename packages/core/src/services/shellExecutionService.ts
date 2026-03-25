@@ -629,7 +629,7 @@ export class ShellExecutionService {
         code: number | null,
         signal: NodeJS.Signals | null,
       ) => {
-        const { finalBuffer } = cleanup();
+        cleanup();
 
         let combinedOutput = state.output;
         if (state.truncated) {
@@ -644,7 +644,7 @@ export class ShellExecutionService {
         const exitSignal = signal ? os.constants.signals[signal] : null;
 
         const resultPayload: ShellExecutionResult = {
-          rawOutput: finalBuffer,
+          rawOutput: Buffer.from(''),
           output: finalStrippedOutput,
           exitCode,
           signal: exitSignal,
@@ -1076,7 +1076,7 @@ export class ShellExecutionService {
             });
 
             ExecutionLifecycleService.completeWithResult(ptyPid, {
-              rawOutput: Buffer.concat(outputChunks),
+              rawOutput: Buffer.from(''),
               output: getFullBufferText(headlessTerminal),
               exitCode,
               signal: signal ?? null,
