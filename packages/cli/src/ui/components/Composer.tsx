@@ -190,29 +190,38 @@ export const Composer = ({ isFocused = true }: { isFocused?: boolean }) => {
             alignItems={isNarrow ? 'flex-start' : 'center'}
             flexGrow={1}
           >
-            {showUiDetails &&
-              (hasToast ? (
-                <ToastDisplay />
-              ) : (
-                <Box
-                  flexDirection={isNarrow ? 'column' : 'row'}
-                  alignItems={isNarrow ? 'flex-start' : 'center'}
-                >
-                  {uiState.shellModeActive && (
-                    <Box>
-                      <ShellModeIndicator />
-                    </Box>
-                  )}
-                  {showRawMarkdownIndicator && (
-                    <Box
-                      marginLeft={uiState.shellModeActive && !isNarrow ? 1 : 0}
-                      marginTop={uiState.shellModeActive && isNarrow ? 1 : 0}
-                    >
-                      <RawMarkdownIndicator />
-                    </Box>
-                  )}
-                </Box>
-              ))}
+            {showUiDetails && (
+              <Box
+                flexDirection={isNarrow ? 'column' : 'row'}
+                alignItems={isNarrow ? 'flex-start' : 'center'}
+              >
+                {hasToast && (
+                  <Box marginRight={isNarrow ? 0 : 1}>
+                    <ToastDisplay />
+                  </Box>
+                )}
+                {uiState.shellModeActive && (
+                  <Box
+                    marginLeft={hasToast && !isNarrow ? 1 : 0}
+                    marginTop={hasToast && isNarrow ? 1 : 0}
+                  >
+                    <ShellModeIndicator />
+                  </Box>
+                )}
+                {showRawMarkdownIndicator && (
+                  <Box
+                    marginLeft={
+                      (hasToast || uiState.shellModeActive) && !isNarrow ? 1 : 0
+                    }
+                    marginTop={
+                      (hasToast || uiState.shellModeActive) && isNarrow ? 1 : 0
+                    }
+                  >
+                    <RawMarkdownIndicator />
+                  </Box>
+                )}
+              </Box>
+            )}
           </Box>
           <Box
             marginTop={isNarrow ? 1 : 0}
@@ -339,9 +348,7 @@ export const Composer = ({ isFocused = true }: { isFocused?: boolean }) => {
               flexDirection="column"
               alignItems={isNarrow ? 'flex-start' : 'flex-end'}
             >
-              {!showLoadingIndicator && (
-                <StatusDisplay hideContextSummary={hideContextSummary} />
-              )}
+              <StatusDisplay hideContextSummary={hideContextSummary} />
             </Box>
           </Box>
         )}
